@@ -1,0 +1,58 @@
+Date,Source,Journal No,Reference,Description,Account Code,Account Name,Debit,Credit,Net,Tax Rate,Tax Amount
+03 Jan 2026,INV,INV-2025-118,REF001,Invoice - Plumbing work Renovate NZ Ltd,200,Trade Debtors,,13586.96,13586.96,GST on Income,1086.96
+03 Jan 2026,INV,INV-2025-118,REF001,Invoice - Plumbing work Renovate NZ Ltd,100,Revenue - Plumbing Services,,10869.57,10869.57,GST on Income,869.57
+06 Jan 2026,BILL,BILL-001,REF002,Plumbing Supplies NZ - Materials,455,Materials & Supplies,2956.52,,2956.52,GST on Expenses,443.48
+06 Jan 2026,BILL,BILL-001,REF002,Plumbing Supplies NZ - Materials,820,GST Account,443.48,,,GST,443.48
+08 Jan 2026,PAY,PAY-001,REF003,Payroll - Mike Tane Jan W1,477,Wages & Salaries,3478.26,,,No Tax,0.00
+08 Jan 2026,PAY,PAY-002,REF004,Payroll - Sarah Chen Jan W1,477,Wages & Salaries,3304.35,,,No Tax,0.00
+10 Jan 2026,INV,INV-2025-119,REF005,Invoice - Emergency repairs Auckland Council,200,Trade Debtors,,8152.17,8152.17,GST on Income,652.17
+10 Jan 2026,INV,INV-2025-119,REF005,Invoice - Emergency repairs Auckland Council,100,Revenue - Plumbing Services,,6521.74,6521.74,GST on Income,521.74
+13 Jan 2026,BILL,BILL-002,REF006,Bunnings - Tools & Fittings,472,Tools & Equipment,1913.04,,,GST on Expenses,286.96
+15 Jan 2026,BILL,BILL-003,REF007,Vero Insurance - Q1 Premium,489,Insurance,1304.35,,,GST on Expenses,195.65
+17 Jan 2026,INV,INV-2025-120,REF008,Invoice - New development Kiwi Developments,200,Trade Debtors,,9565.22,9565.22,GST on Income,765.22
+17 Jan 2026,INV,INV-2025-120,REF008,Invoice - New development Kiwi Developments,100,Revenue - Plumbing Services,,7652.17,7652.17,GST on Income,613.04
+20 Jan 2026,BILL,BILL-004,REF009,Mobil Fuel - Vehicle expenses,449,Motor Vehicle Expenses,1913.04,,,GST on Expenses,286.96
+22 Jan 2026,PAY,PAY-003,REF010,Payroll - Mike Tane Jan W3,477,Wages & Salaries,3478.26,,,No Tax,0.00
+22 Jan 2026,PAY,PAY-004,REF011,Payroll - Sarah Chen Jan W3,477,Wages & Salaries,3478.26,,,No Tax,0.00
+24 Jan 2026,INV,INV-2026-001,REF012,Invoice - Hotel bathroom renovation North Shore Hotel,200,Trade Debtors,,9239.13,9239.13,GST on Income,739.13
+24 Jan 2026,INV,INV-2026-001,REF012,Invoice - Hotel bathroom renovation North Shore Hotel,100,Revenue - Plumbing Services,,7391.30,7391.30,GST on Income,591.30
+27 Jan 2026,BILL,BILL-005,REF013,Plumbing Supplies NZ - Materials,455,Materials & Supplies,1565.22,,,GST on Expenses,234.78
+29 Jan 2026,BILL,BILL-006,REF014,Auckland Council - Building consent fee,461,Subcontractors & Licenses,1304.35,,,GST on Expenses,195.65
+31 Jan 2026,BILL,BILL-007,REF015,Rent - 14 Industrial Rd Unit 3,469,Rent,1304.35,,,GST on Expenses,195.65
+03 Feb 2026,INV,INV-2026-002,REF016,Invoice - Commercial fit-out Fletcher Building,200,Trade Debtors,,11304.35,11304.35,GST on Income,904.35
+03 Feb 2026,INV,INV-2026-002,REF016,Invoice - Commercial fit-out Fletcher Building,100,Revenue - Plumbing Services,,9043.48,9043.48,GST on Income,723.48
+05 Feb 2026,BILL,BILL-008,REF017,Plumbing Supplies NZ - Materials,455,Materials & Supplies,2260.87,,,GST on Expenses,339.13
+07 Feb 2026,PAY,PAY-005,REF018,Payroll - Mike Tane Feb W1,477,Wages & Salaries,3478.26,,,No Tax,0.00
+07 Feb 2026,PAY,PAY-006,REF019,Payroll - Sarah Chen Feb W1,477,Wages & Salaries,3478.26,,,No Tax,0.00
+10 Feb 2026,INV,INV-2026-003,REF020,Invoice - Renovate NZ repeat work,200,Trade Debtors,,5978.26,5978.26,GST on Income,478.26
+10 Feb 2026,INV,INV-2026-003,REF020,Invoice - Renovate NZ repeat work,100,Revenue - Plumbing Services,,4782.61,4782.61,GST on Income,382.61
+12 Feb 2026,BILL,BILL-009,REF021,Trade Tools NZ - Equipment,472,Tools & Equipment,2347.83,,,GST on Expenses,352.17
+14 Feb 2026,INV,INV-2026-004,REF022,Invoice - Residential D Morrison,200,Trade Debtors,,6413.04,6413.04,GST on Income,513.04
+14 Feb 2026,INV,INV-2026-004,REF022,Invoice - Residential D Morrison,100,Revenue - Plumbing Services,,5130.43,5130.43,GST on Income,413.04
+17 Feb 2026,TAX,GST-JAN,REF023,GST Payment to IRD - January 2026,820,GST Account,3200.00,,,No Tax,0.00
+19 Feb 2026,BILL,BILL-010,REF024,Mobil Fuel - Vehicle expenses,449,Motor Vehicle Expenses,1304.35,,,GST on Expenses,195.65
+21 Feb 2026,PAY,PAY-007,REF025,Payroll - Mike Tane Feb W3,477,Wages & Salaries,3478.26,,,No Tax,0.00
+21 Feb 2026,PAY,PAY-008,REF026,Payroll - Sarah Chen Feb W3,477,Wages & Salaries,3478.26,,,No Tax,0.00
+24 Feb 2026,INV,INV-2026-005,REF027,Invoice - Auckland Council maintenance,200,Trade Debtors,,8695.65,8695.65,GST on Income,695.65
+24 Feb 2026,INV,INV-2026-005,REF027,Invoice - Auckland Council maintenance,100,Revenue - Plumbing Services,,6956.52,6956.52,GST on Income,556.52
+26 Feb 2026,BILL,BILL-011,REF028,Bunnings - Materials,455,Materials & Supplies,1565.22,,,GST on Expenses,234.78
+28 Feb 2026,BILL,BILL-012,REF029,Rent - 14 Industrial Rd Unit 3,469,Rent,1304.35,,,GST on Expenses,195.65
+03 Mar 2026,INV,INV-2026-006,REF030,Invoice - Kiwi Developments stage 2,200,Trade Debtors,,9347.83,9347.83,GST on Income,747.83
+03 Mar 2026,INV,INV-2026-006,REF030,Invoice - Kiwi Developments stage 2,100,Revenue - Plumbing Services,,7478.26,7478.26,GST on Income,598.26
+05 Mar 2026,BILL,BILL-013,REF031,Plumbing Supplies NZ - Materials,455,Materials & Supplies,2782.61,,,GST on Expenses,417.39
+07 Mar 2026,PAY,PAY-009,REF032,Payroll - Mike Tane Mar W1,477,Wages & Salaries,3478.26,,,No Tax,0.00
+07 Mar 2026,PAY,PAY-010,REF033,Payroll - Sarah Chen Mar W1,477,Wages & Salaries,3478.26,,,No Tax,0.00
+10 Mar 2026,INV,INV-2026-007,REF034,Invoice - North Shore Hotel follow-up,200,Trade Debtors,,9347.83,9347.83,GST on Income,747.83
+10 Mar 2026,INV,INV-2026-007,REF034,Invoice - North Shore Hotel follow-up,100,Revenue - Plumbing Services,,7478.26,7478.26,GST on Income,598.26
+12 Mar 2026,BILL,BILL-014,REF035,Mobil Fuel - Vehicle expenses,449,Motor Vehicle Expenses,1565.22,,,GST on Expenses,234.78
+14 Mar 2026,BILL,BILL-015,REF036,ACC Levy - Q1,490,ACC Levies,2000.00,,,No Tax,0.00
+17 Mar 2026,INV,INV-2026-008,REF037,Invoice - Fletcher Building phase 2,200,Trade Debtors,,8260.87,8260.87,GST on Income,660.87
+17 Mar 2026,INV,INV-2026-008,REF037,Invoice - Fletcher Building phase 2,100,Revenue - Plumbing Services,,6608.70,6608.70,GST on Income,528.70
+19 Mar 2026,BILL,BILL-016,REF038,Vero Insurance - Q2 Premium,489,Insurance,1565.22,,,GST on Expenses,234.78
+21 Mar 2026,PAY,PAY-011,REF039,Payroll - Mike Tane Mar W3,477,Wages & Salaries,3478.26,,,No Tax,0.00
+21 Mar 2026,PAY,PAY-012,REF040,Payroll - Sarah Chen Mar W3,477,Wages & Salaries,3478.26,,,No Tax,0.00
+24 Mar 2026,INV,INV-2026-009,REF041,Invoice - Residential J Watson,200,Trade Debtors,,7826.09,7826.09,GST on Income,626.09
+24 Mar 2026,INV,INV-2026-009,REF041,Invoice - Residential J Watson,100,Revenue - Plumbing Services,,6260.87,6260.87,GST on Income,500.87
+26 Mar 2026,BILL,BILL-017,REF042,Plumbing Supplies NZ - Materials,455,Materials & Supplies,2608.70,,,GST on Expenses,391.30
+28 Mar 2026,BILL,BILL-018,REF043,Rent - 14 Industrial Rd Unit 3,469,Rent,1304.35,,,GST on Expenses,195.65
+31 Mar 2026,TAX,GST-FEB,REF044,GST Payment to IRD - February 2026,820,GST Account,2800.00,,,No Tax,0.00

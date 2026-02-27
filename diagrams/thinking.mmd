@@ -1,0 +1,29 @@
+flowchart TD
+    subgraph principles ["核心原则"]
+        ROOT["THINKING.md 是根\n方向不对回这里改"]
+    end
+
+    subgraph loop ["Journey Loop（每圈 = Demo 一段）"]
+        S1["L1 痛点\n真实问题？"] --> S2["L2 场景\n可信故事？"]
+        S2 --> S3["L3 价值验证\n量化收益？"]
+        S3 --> S4["L4 规格 + DoD\n做什么？边界？"]
+        S4 --> S5["L5 Claude Code 实现"]
+        S5 --> S6["Verifier 验收"]
+        S6 --> gate{"PASS?"}
+        gate -->|"通过"| done["Checkpoint 完成"]
+        gate -->|"失败 1-3次"| reflex["Reflexion 重试"]
+        reflex --> S5
+        gate -->|"失败 3次仍不过"| ROOT2["根因在上层\n回 L1 重新想"]
+        ROOT2 --> S1
+        done --> next["下一个 Journey"]
+        next --> S1
+    end
+
+    subgraph team ["团队分工"]
+        ME["主 agent — 规格 + 验收"]
+        CC["Claude Code — 写代码"]
+        VF["Verifier — Critic 验收"]
+        KM["Kimi — 研究"]
+    end
+
+    ROOT --> S1

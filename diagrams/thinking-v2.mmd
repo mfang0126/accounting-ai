@@ -1,0 +1,38 @@
+flowchart TD
+    ROOT["THINKING.md 是根\n高于一切"]
+
+    subgraph journey ["Journey Loop — 每圈 = Demo 一段"]
+        S1["L1 痛点"] --> S2["L2 场景"]
+        S2 --> S3["L3 价值验证"]
+        S3 --> S4["L4 规格 + DoD + 场景"]
+        S4 --> S5["L5 Claude Code 实现"]
+        S5 --> S6["Verifier Critic 验收"]
+        S6 --> gate{"PASS?"}
+        gate -->|"通过"| cp["Checkpoint 完成"]
+        gate -->|"失败 1-3次"| rf["Reflexion 重试"]
+        rf --> S5
+        gate -->|"3次仍不过"| up["根因在上层"]
+        up --> S1
+        cp --> nj["下一个 Journey"]
+        nj --> S1
+    end
+
+    subgraph team ["团队分工"]
+        ME["主 agent\n规格 + 决策"]
+        CC["Claude Code\n写代码"]
+        VF["Verifier\nCritic"]
+        KM["Kimi\n研究"]
+        CT["Content\n写文章"]
+    end
+
+    subgraph rules ["强制禁止"]
+        R1["必须真实开发"]
+        R2["禁止 Hacky"]
+        R3["禁止跳步"]
+        R4["验收看真实输出"]
+    end
+
+    ROOT --> S1
+    ME -->|"出规格"| S4
+    CC -->|"实现"| S5
+    VF -->|"验收"| S6

@@ -1,0 +1,13 @@
+flowchart TD
+    ROOT["THINKING.md 是根"] --> J1["1. 痛点"]
+    J1 --> J2["2. 场景"]
+    J2 --> J3["3. 价值验证"]
+    J3 --> J4["4. 规格 + DoD"]
+    J4 --> J5["5. Claude Code 实现"]
+    J5 --> J6["6. Verifier 验收"]
+    J6 --> decide{"PASS?"}
+    decide -->|"通过"| checkpoint["Checkpoint 完成"]
+    decide -->|"失败"| reflect["Reflexion 最多3次"]
+    reflect --> J5
+    checkpoint --> next["下一个 Journey"]
+    next --> J1
