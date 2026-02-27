@@ -1,6 +1,7 @@
 # CAPABILITY.md — 项目能力说明 + 验证计划
 
-> **这个文件回答：项目能做什么、怎么用真实数据验证、每个 Journey 怎么证明它 work。**
+> **什么时候读：** Critic 验收时（查验证标准）、写 DoD 时（查测试数据）。日常路由不需要读。
+> 回答：项目能做什么、怎么验证、每个 Journey 怎么证明它 work。
 
 ---
 
@@ -18,14 +19,16 @@ Accounting AI 是一个 AI 助理会计，能独立完成 NZ 会计事务所的�
 
 ## 6 个 Journey 能力矩阵
 
-| Journey | 能力 | 输入 | 输出 | 验证命令 |
-|---------|------|------|------|---------|
-| **J1** | Bank Reconciliation | bank CSV + GL CSV | matched/unmatched 列表 | 跑对账脚本，确认 41 笔 matched + 3 个异常 |
-| **J2** | Anomaly Investigation | J1 的 unmatched 列表 | 每个异常的原因分析 + 处理建议 | AI 对 5 个问题给出正确判断（见下方） |
-| **J3** | GST Return | GL 的 Tax 列 + GST payments | GST collected / paid / net liability | 手算验证 GST 净额与 AI 输出一致 |
-| **J4** | P&L Summary | GL 的 Account Code + Debit/Credit | 按科目的 Revenue / Expenses / Net Profit | 手算验证总数与 AI 输出一致 |
-| **J5** | Working Paper | J1-J4 全部输出 | 结构化底稿，每个数字带来源引用 | 抽查 5 个数字，每个都能追溯到原始 CSV 行 |
-| **J6** | Partner Review | 浏览器 UI | 上传 + 可视化 + 追问 | 端到端操作：上传两个文件 → 看到报告 → 追问一个问题 |
+| Journey | 能力 | Mastra Tools | 输入 | 输出 | 验证命令 |
+|---------|------|-------------|------|------|---------|
+| **J1** | Bank Reconciliation | readFile, parseBankCsv, parseXeroGL, reconcile | bank CSV + GL CSV | matched/unmatched 列表 | 跑对账脚本，确认 41 笔 matched + 3 个异常 |
+| **J2** | Anomaly Investigation | investigateAnomalies | J1 的 anomalies 列表 | 每个异常的原因分析 + 处理建议 | AI 对 5 个问题给出正确判断（见下方） |
+| **J3** | GST Return | calculateGST | GL 的 Tax 列 + GST payments | GST collected / paid / net liability | 手算验证 GST 净额与 AI 输出一致 |
+| **J4** | P&L Summary | generatePnL | GL 的 Account Code + Debit/Credit | 按科目的 Revenue / Expenses / Net Profit | 手算验证总数与 AI 输出一致 |
+| **J5** | Working Paper | generateWorkingPaper | J1-J4 全部输出 | 结构化底稿，每个数字带来源引用 | 抽查 5 个数字，每个都能追溯到原始 CSV 行 |
+| **J6** | Partner Review | queryTransactions + 前端 | 浏览器 UI | 上传 + 可视化 + 追问 | 端到端操作：上传两个文件 → 看到报告 → 追问一个问题 |
+
+> 完整 tools 设计见 `TOOLS_STRATEGY.md`
 
 ---
 

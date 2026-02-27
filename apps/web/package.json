@@ -1,0 +1,9 @@
+{
+  "name": "@accounting-ai/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'web: no build yet'",
+    "dev": "echo 'web: no dev yet'"
+  }
+}

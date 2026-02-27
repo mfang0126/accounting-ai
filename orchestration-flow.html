@@ -3,281 +3,655 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenClaw Orchestration Flow</title>
+<title>OpenClaw Orchestration Flow — 完整步骤</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 40px 20px; }
-  .container { max-width: 900px; margin: 0 auto; }
+  .container { max-width: 1000px; margin: 0 auto; }
   h1 { text-align: center; font-size: 28px; font-weight: 600; margin-bottom: 8px; color: #fff; }
   .subtitle { text-align: center; font-size: 14px; color: #666; margin-bottom: 48px; }
 
-  .phase { margin-bottom: 40px; position: relative; }
-  .phase-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 16px; padding-left: 4px; }
+  /* Section */
+  .section { margin-bottom: 48px; position: relative; }
+  .section-label { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; padding-left: 4px; }
 
-  .node { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px 24px; margin-bottom: 2px; position: relative; transition: border-color 0.2s; }
-  .node:hover { border-color: #444; }
-  .node-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-  .node-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-  .node-title { font-size: 16px; font-weight: 600; color: #fff; }
-  .node-desc { font-size: 13px; color: #888; line-height: 1.5; padding-left: 48px; }
-  .node-file { display: inline-block; background: #1a1a2e; color: #7c8cf5; font-family: 'SF Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; }
+  /* Node styles */
+  .node { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 2px; position: relative; }
+  .node-sm { padding: 10px 16px; }
+  .node-header { display: flex; align-items: center; gap: 10px; }
+  .node-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .node-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .node-desc { font-size: 12px; color: #777; line-height: 1.5; padding-left: 42px; margin-top: 4px; }
+  .node-file { display: inline-block; background: #1a1a2e; color: #7c8cf5; font-family: 'SF Mono', monospace; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+  .node-detail { font-size: 11px; color: #555; padding-left: 42px; margin-top: 4px; font-family: 'SF Mono', monospace; }
 
-  .boot .node-icon { background: #1a2332; color: #4a9eff; }
-  .boot .node { border-left: 3px solid #4a9eff; }
-  .think .node-icon { background: #2d1f3d; color: #b07aff; }
-  .think .node { border-left: 3px solid #b07aff; }
-  .exec .node-icon { background: #1a3324; color: #4aff7a; }
-  .exec .node { border-left: 3px solid #4aff7a; }
-  .verify .node-icon { background: #332d1a; color: #ffd04a; }
-  .verify .node { border-left: 3px solid #ffd04a; }
-  .learn .node-icon { background: #331a1a; color: #ff6b6b; }
-  .learn .node { border-left: 3px solid #ff6b6b; }
+  /* Colors */
+  .c-blue .node-icon { background: #1a2332; color: #4a9eff; }
+  .c-blue .node { border-left: 3px solid #4a9eff; }
+  .c-blue .section-label { color: #4a9eff; }
 
-  .connector { display: flex; justify-content: center; padding: 4px 0; }
-  .arrow { color: #333; font-size: 20px; }
+  .c-purple .node-icon { background: #2d1f3d; color: #b07aff; }
+  .c-purple .node { border-left: 3px solid #b07aff; }
+  .c-purple .section-label { color: #b07aff; }
 
-  .decision { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px 24px; margin-bottom: 2px; text-align: center; }
-  .decision-text { font-size: 14px; font-weight: 600; color: #ffd04a; }
-  .decision-branches { display: flex; justify-content: center; gap: 40px; margin-top: 12px; }
+  .c-green .node-icon { background: #1a3324; color: #4aff7a; }
+  .c-green .node { border-left: 3px solid #4aff7a; }
+  .c-green .section-label { color: #4aff7a; }
+
+  .c-yellow .node-icon { background: #332d1a; color: #ffd04a; }
+  .c-yellow .node { border-left: 3px solid #ffd04a; }
+  .c-yellow .section-label { color: #ffd04a; }
+
+  .c-red .node-icon { background: #331a1a; color: #ff6b6b; }
+  .c-red .node { border-left: 3px solid #ff6b6b; }
+  .c-red .section-label { color: #ff6b6b; }
+
+  .c-teal .node-icon { background: #1a3333; color: #4affef; }
+  .c-teal .node { border-left: 3px solid #4affef; }
+  .c-teal .section-label { color: #4affef; }
+
+  .c-pink .node-icon { background: #331a2d; color: #ff7aaf; }
+  .c-pink .node { border-left: 3px solid #ff7aaf; }
+  .c-pink .section-label { color: #ff7aaf; }
+
+  /* Connector */
+  .conn { display: flex; justify-content: center; padding: 3px 0; }
+  .conn .arr { color: #333; font-size: 16px; }
+
+  /* Decision */
+  .decision { background: #161616; border: 2px dashed #444; border-radius: 12px; padding: 14px 20px; margin-bottom: 2px; text-align: center; }
+  .decision-q { font-size: 13px; font-weight: 600; color: #ffd04a; }
+  .decision-branches { display: flex; justify-content: center; gap: 32px; margin-top: 8px; flex-wrap: wrap; }
   .branch { font-size: 12px; color: #888; }
-  .branch-pass { color: #4aff7a; }
-  .branch-fail { color: #ff6b6b; }
+  .pass { color: #4aff7a; font-weight: 600; }
+  .fail { color: #ff6b6b; font-weight: 600; }
 
-  .journey-loop { border: 1px dashed #333; border-radius: 16px; padding: 24px; margin-bottom: 2px; position: relative; }
-  .journey-loop-label { position: absolute; top: -10px; left: 20px; background: #0a0a0a; padding: 0 12px; font-size: 11px; font-weight: 700; color: #b07aff; letter-spacing: 1px; }
+  /* Loop container */
+  .loop-box { border: 1px dashed #333; border-radius: 16px; padding: 20px; margin-bottom: 2px; position: relative; }
+  .loop-label { position: absolute; top: -10px; left: 20px; background: #0a0a0a; padding: 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
 
-  .repeat-arrow { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; color: #666; font-size: 12px; }
-  .repeat-arrow .curve { font-size: 24px; color: #b07aff; }
-
-  .file-sequence { display: flex; gap: 6px; flex-wrap: wrap; padding-left: 48px; margin-top: 8px; }
-  .file-tag { font-family: 'SF Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 6px; background: #1a1a1a; border: 1px solid #2a2a2a; }
-  .file-tag.active { border-color: #4a9eff; color: #4a9eff; }
-
-  .summary { background: linear-gradient(135deg, #161616, #1a1a2e); border: 1px solid #2a2a4e; border-radius: 12px; padding: 24px; margin-top: 40px; }
-  .summary h3 { font-size: 14px; color: #7c8cf5; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; }
-  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .summary-label { font-size: 11px; color: #666; margin-bottom: 4px; }
-  .summary-value { font-size: 14px; color: #fff; font-weight: 500; }
-  .summary-value code { color: #4aff7a; background: #1a3324; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+  /* Nested loop */
+  .inner-loop { border: 1px dashed #2a2a2a; border-radius: 12px; padding: 16px; margin: 8px 0; position: relative; }
+  .inner-loop-label { position: absolute; top: -9px; left: 16px; background: #161616; padding: 0 8px; font-size: 10px; font-weight: 600; letter-spacing: 1px; }
 
   /* Journey timeline */
-  .journey-timeline { margin: 40px 0; }
-  .jt-title { font-size: 14px; font-weight: 700; color: #b07aff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; padding-left: 4px; }
-  .jt-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
-  .jt-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-  .jt-content { flex: 1; }
-  .jt-name { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-  .jt-what { font-size: 12px; color: #888; }
-  .jt-verify { font-size: 11px; color: #666; margin-top: 4px; font-family: 'SF Mono', monospace; }
-  .jt-connector { display: flex; padding-left: 20px; height: 8px; }
-  .jt-line { width: 1px; background: #333; height: 100%; }
-
+  .jt { margin: 40px 0; }
+  .jt-title { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; padding-left: 4px; color: #b07aff; }
+  .jt-row { display: grid; grid-template-columns: 44px 1fr; gap: 12px; margin-bottom: 4px; align-items: start; }
+  .jt-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .jt-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .jt-what { font-size: 11px; color: #777; margin-top: 2px; }
+  .jt-verify { font-size: 10px; color: #555; margin-top: 3px; font-family: 'SF Mono', monospace; }
+  .jt-line { display: flex; padding-left: 20px; height: 6px; }
+  .jt-line div { width: 1px; background: #2a2a2a; height: 100%; }
   .j1 .jt-badge { background: #1a3324; color: #4aff7a; }
   .j2 .jt-badge { background: #332d1a; color: #ffd04a; }
   .j3 .jt-badge { background: #2d1f3d; color: #b07aff; }
   .j4 .jt-badge { background: #1a2332; color: #4a9eff; }
   .j5 .jt-badge { background: #331a2d; color: #ff7aaf; }
   .j6 .jt-badge { background: #1a3333; color: #4affef; }
+
+  /* Summary */
+  .summary { background: linear-gradient(135deg, #161616, #1a1a2e); border: 1px solid #2a2a4e; border-radius: 12px; padding: 20px; margin-top: 40px; }
+  .summary h3 { font-size: 13px; color: #7c8cf5; margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .summary-label { font-size: 10px; color: #555; margin-bottom: 2px; }
+  .summary-value { font-size: 13px; color: #fff; }
+  .summary-value code { color: #4aff7a; background: #1a3324; padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+
+  .file-seq { display: flex; gap: 4px; flex-wrap: wrap; padding-left: 42px; margin-top: 6px; }
+  .ftag { font-family: 'SF Mono', monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: #1a1a1a; border: 1px solid #2a2a2a; color: #888; }
+  .ftag.on { border-color: #4a9eff; color: #4a9eff; }
+
+  hr.sep { border: none; border-top: 1px dashed #2a2a2a; margin: 40px 0; }
+
+  .sub-step { margin-left: 42px; padding: 6px 12px; background: #111; border-left: 2px solid #333; border-radius: 0 6px 6px 0; margin-top: 4px; margin-bottom: 4px; }
+  .sub-step-text { font-size: 11px; color: #888; }
+  .sub-step-text strong { color: #bbb; }
+
+  .notify-box { background: #1a2332; border: 1px solid #2a4060; border-radius: 8px; padding: 10px 14px; margin: 8px 0 8px 42px; }
+  .notify-text { font-size: 11px; color: #4a9eff; }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>OpenClaw Orchestration Flow</h1>
-  <p class="subtitle">AI 助理会计 — 季度末完整工作流 — Harbourside Plumbing Q1 2026</p>
+  <p class="subtitle">AI 助理会计 — 完整步骤展开图 — Harbourside Plumbing Q1 2026</p>
 
+  <!-- ============================================ -->
   <!-- JOURNEY TIMELINE -->
-  <div class="journey-timeline">
+  <!-- ============================================ -->
+  <div class="jt">
     <div class="jt-title">6 个 Journey = 一次完整季度末结账</div>
 
-    <div class="jt-item j1">
+    <div class="jt-row j1">
       <div class="jt-badge">J1</div>
-      <div class="jt-content">
+      <div>
         <div class="jt-name">"帮我对一下 Q1 的账"</div>
-        <div class="jt-what">Bank Reconciliation — 44笔银行 vs 57行 GL，逐笔匹配，找出所有不匹配</div>
+        <div class="jt-what">Bank Reconciliation — 44笔银行 vs 57行GL，逐笔匹配</div>
         <div class="jt-verify">验证：41 matched + 3 异常 + 0 误报</div>
       </div>
     </div>
-    <div class="jt-connector"><div class="jt-line"></div></div>
+    <div class="jt-line"><div></div></div>
 
-    <div class="jt-item j2">
+    <div class="jt-row j2">
       <div class="jt-badge">J2</div>
-      <div class="jt-content">
+      <div>
         <div class="jt-name">"这几笔对不上的，查一下什么情况"</div>
-        <div class="jt-what">Anomaly Investigation — 追查原因，给出会计判断：催款？调账？查编码？</div>
-        <div class="jt-verify">验证：5 个问题全部给出正确判断 + 处理建议</div>
+        <div class="jt-what">Anomaly Investigation — 追查原因，给出会计判断和处理建议</div>
+        <div class="jt-verify">验证：5个问题全部正确判断 + 建议</div>
       </div>
     </div>
-    <div class="jt-connector"><div class="jt-line"></div></div>
+    <div class="jt-line"><div></div></div>
 
-    <div class="jt-item j3">
+    <div class="jt-row j3">
       <div class="jt-badge">J3</div>
-      <div class="jt-content">
+      <div>
         <div class="jt-name">"算一下 GST，我要报 IRD"</div>
-        <div class="jt-what">GST Return — 收了多少 / 付了多少 / 已交 $6,000 / 还欠多少</div>
-        <div class="jt-verify">验证：AI 净额 vs 手算净额一致（NZ 15%）</div>
+        <div class="jt-what">GST Return — 收了/付了/已交$6,000/还欠多少</div>
+        <div class="jt-verify">验证：AI净额 vs 手算净额一致（NZ 15%）</div>
       </div>
     </div>
-    <div class="jt-connector"><div class="jt-line"></div></div>
+    <div class="jt-line"><div></div></div>
 
-    <div class="jt-item j4">
+    <div class="jt-row j4">
       <div class="jt-badge">J4</div>
-      <div class="jt-content">
+      <div>
         <div class="jt-name">"出一份 Q1 的 P&L 给我"</div>
-        <div class="jt-what">P&L Summary — Revenue / Expenses / Net Profit，按 10 个科目分类</div>
-        <div class="jt-verify">验证：总数与 GL 手算一致</div>
+        <div class="jt-what">P&L — Revenue / Expenses / Net Profit，10个科目</div>
+        <div class="jt-verify">验证：总数与GL手算一致</div>
       </div>
     </div>
-    <div class="jt-connector"><div class="jt-line"></div></div>
+    <div class="jt-line"><div></div></div>
 
-    <div class="jt-item j5">
+    <div class="jt-row j5">
       <div class="jt-badge">J5</div>
-      <div class="jt-content">
+      <div>
         <div class="jt-name">"整理成底稿，每个数字要有来源"</div>
-        <div class="jt-what">Working Paper — J1-J4 汇总，每个数字标注 CSV 来源行号</div>
-        <div class="jt-verify">验证：抽查 5 个数字，每个可追溯到原始数据</div>
+        <div class="jt-what">Working Paper — J1-J4汇总，每个数字标注CSV来源行号</div>
+        <div class="jt-verify">验证：抽查5个数字，每个可追溯</div>
       </div>
     </div>
-    <div class="jt-connector"><div class="jt-line"></div></div>
+    <div class="jt-line"><div></div></div>
 
-    <div class="jt-item j6">
+    <div class="jt-row j6">
       <div class="jt-badge">J6</div>
-      <div class="jt-content">
+      <div>
         <div class="jt-name">合伙人审阅 + 追问</div>
-        <div class="jt-what">Partner Review — 上传文件 → 看结果 → "Materials 花了多少？"</div>
-        <div class="jt-verify">验证：端到端操作，上传到追问全流程</div>
+        <div class="jt-what">Partner Review — 上传→看结果→"Materials花了多少？"</div>
+        <div class="jt-verify">验证：端到端上传到追问全流程</div>
       </div>
     </div>
   </div>
 
-  <hr style="border: none; border-top: 1px dashed #2a2a2a; margin: 40px 0;">
+  <hr class="sep">
 
-  <!-- PHASE 1: BOOTSTRAP -->
-  <div class="phase boot">
-    <div class="phase-label">Agent 启动</div>
+  <!-- ============================================ -->
+  <!-- PHASE 1: BOOTSTRAP — 每个步骤展开 -->
+  <!-- ============================================ -->
+  <div class="section c-blue">
+    <div class="section-label">Phase 1 — Agent 启动（每次 Session 开始）</div>
 
-    <div class="node">
+    <div class="node node-sm">
       <div class="node-header">
-        <div class="node-icon">1</div>
-        <div class="node-title">读 BOOTSTRAP.md → 按序读取 8 个文件</div>
+        <div class="node-icon">1.1</div>
+        <div class="node-title">读 BOOTSTRAP.md（入口文件）</div>
       </div>
-      <div class="file-sequence">
-        <span class="file-tag active">BOOTSTRAP</span>
-        <span class="file-tag">PROJECT</span>
-        <span class="file-tag">CONTEXT</span>
-        <span class="file-tag">CAPABILITY</span>
-        <span class="file-tag">THINKING</span>
-        <span class="file-tag">TASKS</span>
-        <span class="file-tag">PLAN</span>
-        <span class="file-tag">DEMO_DESIGN</span>
-      </div>
-      <div class="node-desc" style="margin-top: 12px;">启动检查 4 项 → 全部通过 → 找 [>] 继续</div>
+      <div class="node-desc">确认自己是主 agent，负责规格/拆任务/委派/验收。不写代码。</div>
     </div>
-  </div>
+    <div class="conn"><span class="arr">↓</span></div>
 
-  <div class="connector"><span class="arrow" style="font-size: 24px; color: #4a9eff;">⬇</span></div>
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">1.2</div>
+        <div class="node-title">按序读取 8 个文件</div>
+      </div>
+      <div class="file-seq">
+        <span class="ftag on">BOOTSTRAP</span>
+        <span class="ftag">PROJECT</span>
+        <span class="ftag">CONTEXT</span>
+        <span class="ftag">CAPABILITY</span>
+        <span class="ftag">THINKING</span>
+        <span class="ftag">TASKS</span>
+        <span class="ftag">PLAN</span>
+        <span class="ftag">DEMO_DESIGN</span>
+      </div>
+      <div class="node-desc">缺一个就停，记录到 Learning Log，等人工。</div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
 
-  <!-- PHASE 2: ROUTE -->
-  <div class="phase think">
-    <div class="phase-label">路由决策</div>
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">1.3</div>
+        <div class="node-title">启动检查 — 4 项全部通过才继续</div>
+      </div>
+      <div class="sub-step"><div class="sub-step-text"><strong>Check 1:</strong> TASKS.md 存在且有"当前位置"</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>Check 2:</strong> 有且仅有一个 [>] 任务（或零个 = 需拆新任务）</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>Check 3:</strong> THINKING.md 的 Journey 状态和 TASKS.md 一致</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>Check 4:</strong> data/sample/ 下有测试数据</div></div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
+
     <div class="decision">
-      <div class="decision-text">TASKS.md 里有 [>] 任务吗？</div>
+      <div class="decision-q">4 项检查结果？</div>
       <div class="decision-branches">
-        <div class="branch"><span class="branch-pass">有 →</span> 直接执行</div>
-        <div class="branch"><span class="branch-fail">无 →</span> 解锁下个 Journey，走 Step 1-4 拆 task</div>
+        <div class="branch"><span class="pass">全部通过 →</span> 进入 Phase 2 路由</div>
+        <div class="branch"><span class="fail">有缺失 →</span> 停，记录 Learning Log，等人工</div>
       </div>
     </div>
   </div>
 
-  <div class="connector"><span class="arrow" style="font-size: 24px; color: #b07aff;">⬇</span></div>
+  <div class="conn"><span class="arr" style="font-size: 20px; color: #4a9eff;">⬇</span></div>
 
-  <!-- PHASE 3: JOURNEY LOOP -->
-  <div class="phase">
-    <div class="journey-loop">
-      <div class="journey-loop-label">每个 JOURNEY 重复此循环（J1 → J2 → ... → J6）</div>
+  <!-- ============================================ -->
+  <!-- PHASE 2: ROUTING — 每个分支展开 -->
+  <!-- ============================================ -->
+  <div class="section c-purple">
+    <div class="section-label">Phase 2 — 路由决策</div>
 
-      <div class="phase exec" style="margin-top: 8px;">
-        <div class="phase-label">执行</div>
-        <div class="node">
-          <div class="node-header">
-            <div class="node-icon">▶</div>
-            <div class="node-title">委派 Claude Code 写代码</div>
-          </div>
-          <div class="node-desc">
-            每个 task 带 DoD + Acceptance Scenarios<br>
-            完成 → 更新 TASKS.md [>] → [x] + Status Log
-          </div>
+    <div class="decision">
+      <div class="decision-q">TASKS.md 当前状态是什么？</div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 2px;">
+      <div class="node node-sm" style="border-left: 3px solid #4aff7a;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #1a3324; color: #4aff7a; font-size: 11px;">A</div>
+          <div class="node-title" style="font-size: 13px;">有 [>] 任务</div>
         </div>
+        <div class="node-desc">直接从该任务继续执行，不重新规划</div>
       </div>
-
-      <div class="connector"><span class="arrow">↓</span></div>
-
-      <div class="phase verify">
-        <div class="phase-label">验收</div>
-        <div class="node">
-          <div class="node-header">
-            <div class="node-icon">✓</div>
-            <div class="node-title">Critic Agent 对照 DoD 验收</div>
-          </div>
-          <div class="node-desc">跑真实命令 → 对比预期输出 → PASS 或 FAIL</div>
+      <div class="node node-sm" style="border-left: 3px solid #b07aff;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #2d1f3d; color: #b07aff; font-size: 11px;">B</div>
+          <div class="node-title" style="font-size: 13px;">无 [>]，上个 Journey 已 PASS</div>
         </div>
-
-        <div class="connector"><span class="arrow">↓</span></div>
-
-        <div class="decision">
-          <div class="decision-text">结果？</div>
-          <div class="decision-branches">
-            <div class="branch"><span class="branch-pass">PASS →</span> Checkpoint + 通知用户 + 解锁下一个</div>
-            <div class="branch"><span class="branch-fail">FAIL →</span> Learning Log + 重试（最多 3 次）</div>
-          </div>
-        </div>
+        <div class="node-desc">解锁下一个 Journey → 进入 Phase 3 规格阶段</div>
       </div>
-
-      <div class="repeat-arrow">
-        <span class="curve">↻</span>
-        <span>FAIL → 重试 / PASS → 下一个 Journey</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <div class="node node-sm" style="border-left: 3px solid #ffd04a;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #332d1a; color: #ffd04a; font-size: 11px;">C</div>
+          <div class="node-title" style="font-size: 13px;">全部 Journey 完成</div>
+        </div>
+        <div class="node-desc">通知用户 🎉，停下等指示</div>
+      </div>
+      <div class="node node-sm" style="border-left: 3px solid #ff6b6b;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #331a1a; color: #ff6b6b; font-size: 11px;">D</div>
+          <div class="node-title" style="font-size: 13px;">不确定怎么决策</div>
+        </div>
+        <div class="node-desc">写 [BLOCKED] + 原因，通知用户 ⚠️</div>
       </div>
     </div>
   </div>
 
-  <div class="connector"><span class="arrow" style="font-size: 24px; color: #4aff7a;">⬇</span></div>
+  <div class="conn"><span class="arr" style="font-size: 20px; color: #b07aff;">⬇</span></div>
 
-  <div class="phase boot">
+  <!-- ============================================ -->
+  <!-- PHASE 3: JOURNEY SPEC (Step 1-4) -->
+  <!-- ============================================ -->
+  <div class="section c-teal">
+    <div class="section-label">Phase 3 — Journey 规格（Step 1-4，只在新 Journey 解锁时执行）</div>
+
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">S1</div>
+        <div class="node-title">痛点 — 用户现在的痛是什么？</div>
+      </div>
+      <div class="node-desc">一句话写入 TASKS.md 对应 Journey 区块</div>
+      <div class="node-detail">例：J2 → "对不上的几笔不知道什么原因，手工查很慢"</div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
+
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">S2</div>
+        <div class="node-title">场景 — 用户做什么操作，期望看到什么？</div>
+      </div>
+      <div class="node-desc">描述完整使用场景，写入 TASKS.md</div>
+      <div class="node-detail">例：J2 → "合伙人说'这几笔查一下'，AI 给出每笔的原因+建议"</div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
+
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">S3</div>
+        <div class="node-title">价值验证 — 这个 Journey 证明了什么能力？</div>
+      </div>
+      <div class="node-desc">一句话说明价值，写入 TASKS.md</div>
+      <div class="node-detail">例：J2 → "证明 AI 不只找异常，还能像会计一样给判断"</div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
+
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">S4</div>
+        <div class="node-title">规格 — DoD + Acceptance Scenarios</div>
+      </div>
+      <div class="node-desc">验收命令 + 预期输出 + 正常/边界/错误场景</div>
+      <div class="sub-step"><div class="sub-step-text"><strong>DoD:</strong> 一条 curl/命令 + 具体预期输出</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>正常场景:</strong> 输入正确时应该输出什么</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>边界场景:</strong> 空/格式错/金额为零不能崩</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>错误场景:</strong> 文件不存在应该报什么错</div></div>
+    </div>
+    <div class="conn"><span class="arr">↓</span></div>
+
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">拆</div>
+        <div class="node-title">拆 Task — 按 S4 拆成具体任务</div>
+      </div>
+      <div class="node-desc">每个 task 必须有：任务描述 + DoD + Acceptance Scenarios</div>
+      <div class="sub-step"><div class="sub-step-text"><strong>规则:</strong> 一次一个文件，< 50 行</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>规则:</strong> Claude Code 超时 = 任务太大，继续拆</div></div>
+      <div class="sub-step"><div class="sub-step-text">写入 TASKS.md，第一个 task 标 [>]</div></div>
+    </div>
+  </div>
+
+  <div class="conn"><span class="arr" style="font-size: 20px; color: #4affef;">⬇</span></div>
+
+  <!-- ============================================ -->
+  <!-- PHASE 4: EXECUTION LOOP -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="loop-box">
+      <div class="loop-label" style="color: #4aff7a;">TASK 执行循环（对每个 task 重复）</div>
+
+      <!-- Step 5: Execute -->
+      <div class="section c-green" style="margin-top: 12px;">
+        <div class="section-label">Phase 4 — 执行（Step 5）</div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">5.1</div>
+            <div class="node-title">主 agent 委派 Claude Code</div>
+          </div>
+          <div class="node-desc">发送：任务描述 + DoD + Acceptance Scenarios</div>
+          <div class="node-detail">委派最多 2 层：主 agent → Claude Code，不再往下派</div>
+        </div>
+        <div class="conn"><span class="arr">↓</span></div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">5.2</div>
+            <div class="node-title">Claude Code 写代码</div>
+          </div>
+          <div class="node-desc">限定项目目录，写生产级代码（不是 demo 壳）</div>
+          <div class="sub-step"><div class="sub-step-text"><strong>禁止:</strong> Hacky / 绕过问题 / 超时 = 任务太大要拆</div></div>
+        </div>
+        <div class="conn"><span class="arr">↓</span></div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">5.3</div>
+            <div class="node-title">Claude Code 完成 → 写 Handoff Notes</div>
+          </div>
+          <div class="node-desc">更新 TASKS.md：[>] → [x] + 写 Status Log 一行</div>
+          <div class="node-detail">发 EXIT_SIGNAL，不解释细节</div>
+        </div>
+        <div class="conn"><span class="arr">↓</span></div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">5.4</div>
+            <div class="node-title">更新 Status Log</div>
+          </div>
+          <div class="node-desc">追加一行：[时间] [一句话说明]，< 20 字</div>
+          <div class="node-detail">例：14:12 Claude Code 完成 reconcileTool，41/44 匹配</div>
+        </div>
+      </div>
+
+      <div class="conn"><span class="arr">↓</span></div>
+
+      <div class="decision">
+        <div class="decision-q">当前 Journey 所有 task 都 [x] 了吗？</div>
+        <div class="decision-branches">
+          <div class="branch"><span class="pass">是 →</span> 进入 Phase 5 验收</div>
+          <div class="branch"><span class="fail">否 →</span> 标下一个 task 为 [>]，回到 5.1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="conn"><span class="arr" style="font-size: 20px; color: #ffd04a;">⬇</span></div>
+
+  <!-- ============================================ -->
+  <!-- PHASE 5: VERIFICATION (Step 6) -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="loop-box">
+      <div class="loop-label" style="color: #ffd04a;">CRITIC 验收（最多重试 3 次）</div>
+
+      <div class="section c-yellow" style="margin-top: 12px;">
+        <div class="section-label">Phase 5 — Critic 验收（Step 6）</div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">6.1</div>
+            <div class="node-title">委派 Critic Agent（Verifier）</div>
+          </div>
+          <div class="node-desc">发送：代码 + DoD + Acceptance Scenarios。Critic 只读不改。</div>
+        </div>
+        <div class="conn"><span class="arr">↓</span></div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">6.2</div>
+            <div class="node-title">Critic 跑真实验收命令</div>
+          </div>
+          <div class="node-desc">curl / 脚本 / ts-node → 真实输出（不接受"应该可以"）</div>
+          <div class="node-detail">对比 AI 输出 vs 手算结果 / 预期输出</div>
+        </div>
+        <div class="conn"><span class="arr">↓</span></div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">6.3</div>
+            <div class="node-title">Critic 逐条检查 DoD</div>
+          </div>
+          <div class="sub-step"><div class="sub-step-text"><strong>对每个 Acceptance Scenario:</strong> 实际输出 vs 预期输出</div></div>
+          <div class="sub-step"><div class="sub-step-text"><strong>边界场景:</strong> 空文件/格式错/极端值不崩溃</div></div>
+          <div class="sub-step"><div class="sub-step-text"><strong>误报检查:</strong> 正确交易不应被标记为异常</div></div>
+        </div>
+        <div class="conn"><span class="arr">↓</span></div>
+
+        <div class="node node-sm">
+          <div class="node-header">
+            <div class="node-icon">6.4</div>
+            <div class="node-title">Critic 输出 PASS / FAIL + 原因</div>
+          </div>
+          <div class="node-desc">更新 Status Log：[时间] Critic PASS/FAIL — [一句话原因]</div>
+        </div>
+      </div>
+
+      <div class="conn"><span class="arr">↓</span></div>
+
+      <div class="decision">
+        <div class="decision-q">验收结果？</div>
+      </div>
+      <div class="conn"><span class="arr">↓</span></div>
+
+      <!-- PASS branch -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <div class="node node-sm" style="border-left: 3px solid #4aff7a; background: #0d1a10;">
+            <div class="node-header">
+              <div class="node-icon" style="background: #1a3324; color: #4aff7a;">✓</div>
+              <div class="node-title" style="color: #4aff7a; font-size: 13px;">PASS</div>
+            </div>
+          </div>
+          <div class="conn"><span class="arr">↓</span></div>
+          <div class="sub-step" style="margin-left: 0; border-color: #4aff7a;">
+            <div class="sub-step-text"><strong>写 Checkpoint:</strong> 命令+输出+结论 → TASKS.md</div>
+          </div>
+          <div class="sub-step" style="margin-left: 0; border-color: #4aff7a;">
+            <div class="sub-step-text"><strong>更新 Journey 状态:</strong> THINKING.md + TASKS.md</div>
+          </div>
+          <div class="sub-step" style="margin-left: 0; border-color: #4aff7a;">
+            <div class="sub-step-text"><strong>通知用户:</strong> ✅ J1 验收通过。准备开始 J2。</div>
+          </div>
+          <div class="sub-step" style="margin-left: 0; border-color: #4aff7a;">
+            <div class="sub-step-text"><strong>解锁下一个 Journey →</strong> 回到 Phase 3</div>
+          </div>
+        </div>
+
+        <!-- FAIL branch -->
+        <div>
+          <div class="node node-sm" style="border-left: 3px solid #ff6b6b; background: #1a0d0d;">
+            <div class="node-header">
+              <div class="node-icon" style="background: #331a1a; color: #ff6b6b;">✗</div>
+              <div class="node-title" style="color: #ff6b6b; font-size: 13px;">FAIL（第 N 次）</div>
+            </div>
+          </div>
+          <div class="conn"><span class="arr">↓</span></div>
+          <div class="sub-step" style="margin-left: 0; border-color: #ff6b6b;">
+            <div class="sub-step-text"><strong>写 Learning Log:</strong> [日期] [坑] → [解法]</div>
+          </div>
+          <div class="sub-step" style="margin-left: 0; border-color: #ff6b6b;">
+            <div class="sub-step-text"><strong>Reflexion:</strong> Critic 反馈存入记忆</div>
+          </div>
+
+          <div class="decision" style="margin-top: 8px;">
+            <div class="decision-q" style="font-size: 12px;">重试次数 < 3？</div>
+            <div class="decision-branches">
+              <div class="branch"><span class="pass">是 →</span> 回到 Phase 4 (5.1) 重新执行</div>
+              <div class="branch"><span class="fail">否（3次）→</span> BLOCKED + 通知用户 ⚠️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="conn"><span class="arr" style="font-size: 20px; color: #4aff7a;">⬇</span></div>
+
+  <!-- ============================================ -->
+  <!-- PHASE 6: NEXT JOURNEY / COMPLETION -->
+  <!-- ============================================ -->
+  <div class="section c-purple">
+    <div class="section-label">Phase 6 — Journey 推进</div>
+
+    <div class="decision">
+      <div class="decision-q">还有未完成的 Journey 吗？</div>
+      <div class="decision-branches">
+        <div class="branch"><span class="pass">有 →</span> 解锁下一个 Journey，回到 Phase 3（Step 1-4）</div>
+        <div class="branch"><span class="fail">无 →</span> 全部完成</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="conn"><span class="arr" style="font-size: 20px; color: #4aff7a;">⬇</span></div>
+
+  <!-- ============================================ -->
+  <!-- COMPLETION -->
+  <!-- ============================================ -->
+  <div class="section c-green">
+    <div class="section-label">完成</div>
     <div class="node">
       <div class="node-header">
         <div class="node-icon">🎉</div>
-        <div class="node-title">全部 Journey 完成 → 通知用户</div>
+        <div class="node-title">全部 Journey 完成</div>
       </div>
-      <div class="node-desc">季度末结账流程完成。更新 TASKS.md，等待下一步指示。</div>
+      <div class="sub-step"><div class="sub-step-text"><strong>更新 TASKS.md:</strong> 全部 Journey 标记完成</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>通知用户:</strong> 🎉 全部 Journey 完成。等你下一步指示。</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>停下等指示</strong>（不主动开始新工作）</div></div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- ============================================ -->
+  <!-- NOTIFICATION RULES -->
+  <!-- ============================================ -->
+  <div class="section c-blue">
+    <div class="section-label">通知规则（3 种触发条件）</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+      <div class="node node-sm" style="border-left: 3px solid #4aff7a;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #1a3324; color: #4aff7a;">✅</div>
+          <div class="node-title" style="font-size: 12px;">Journey PASS</div>
+        </div>
+        <div class="node-desc" style="padding-left: 0; margin-top: 8px;">"✅ J1 验收通过。准备开始 J2。"</div>
+      </div>
+      <div class="node node-sm" style="border-left: 3px solid #ff6b6b;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #331a1a; color: #ff6b6b;">⚠️</div>
+          <div class="node-title" style="font-size: 12px;">BLOCKED / 3x FAIL</div>
+        </div>
+        <div class="node-desc" style="padding-left: 0; margin-top: 8px;">"⚠️ [任务名] 卡住：[一句话原因]。"</div>
+      </div>
+      <div class="node node-sm" style="border-left: 3px solid #4affef;">
+        <div class="node-header">
+          <div class="node-icon" style="background: #1a3333; color: #4affef;">🎉</div>
+          <div class="node-title" style="font-size: 12px;">全部完成</div>
+        </div>
+        <div class="node-desc" style="padding-left: 0; margin-top: 8px;">"🎉 全部 Journey 完成。等你下一步指示。"</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- ============================================ -->
+  <!-- SESSION END -->
+  <!-- ============================================ -->
+  <div class="section c-purple">
+    <div class="section-label">Session 结束前（必做）</div>
+
+    <div class="node node-sm">
+      <div class="node-header">
+        <div class="node-icon">💾</div>
+        <div class="node-title">更新 TASKS.md — 确保下次无缝接上</div>
+      </div>
+      <div class="sub-step"><div class="sub-step-text"><strong>"当前位置"</strong> 写清楚在哪个 Journey 哪个 Step</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>[>] 标记</strong> 准确指向当前/下一个 task</div></div>
+      <div class="sub-step"><div class="sub-step-text"><strong>Status Log</strong> 最后一行 = session 结束时间 + 摘要</div></div>
     </div>
   </div>
 
   <!-- Summary -->
   <div class="summary">
-    <h3>文档体系</h3>
+    <h3>文档体系 + 共享状态</h3>
     <div class="summary-grid">
-      <div class="summary-item">
+      <div>
         <div class="summary-label">入口</div>
         <div class="summary-value"><code>BOOTSTRAP.md</code></div>
       </div>
-      <div class="summary-item">
-        <div class="summary-label">大背景 + AI 角色</div>
+      <div>
+        <div class="summary-label">AI 角色 + 场景 + NZ 规则</div>
         <div class="summary-value"><code>CONTEXT.md</code></div>
       </div>
-      <div class="summary-item">
+      <div>
         <div class="summary-label">能力 + 验证计划</div>
         <div class="summary-value"><code>CAPABILITY.md</code></div>
       </div>
-      <div class="summary-item">
-        <div class="summary-label">最高规则</div>
+      <div>
+        <div class="summary-label">最高规则（高于一切）</div>
         <div class="summary-value"><code>THINKING.md</code></div>
       </div>
-      <div class="summary-item">
-        <div class="summary-label">共享状态 + 进度 + 学习</div>
+      <div>
+        <div class="summary-label">唯一共享状态</div>
         <div class="summary-value"><code>TASKS.md</code></div>
       </div>
-      <div class="summary-item">
+      <div>
         <div class="summary-label">测试数据</div>
-        <div class="summary-value"><code>data/sample/</code> Harbourside Plumbing</div>
+        <div class="summary-value"><code>data/sample/</code></div>
+      </div>
+      <div>
+        <div class="summary-label">技术架构</div>
+        <div class="summary-value"><code>PLAN.md</code></div>
+      </div>
+      <div>
+        <div class="summary-label">Demo 脚本</div>
+        <div class="summary-value"><code>DEMO_DESIGN.md</code></div>
+      </div>
+      <div>
+        <div class="summary-label">核心原则</div>
+        <div class="summary-value">接力赛模型，TASKS.md 传递</div>
       </div>
     </div>
   </div>

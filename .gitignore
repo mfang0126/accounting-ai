@@ -5,6 +5,10 @@ node_modules/
 dist/
 *.log
 package-lock.json
+.turbo/
+
+# Added by ggshield
+.cache_ggshield
 
 # Added by ggshield
 .cache_ggshield

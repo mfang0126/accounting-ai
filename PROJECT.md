@@ -14,17 +14,36 @@
 | `PLAN.md` | 技术架构 + Phase 任务列表 | 主 agent |
 | `DEMO_DESIGN.md` | Demo 脚本 + 场景设计 | 主 agent |
 | `TASKS.md` | 当前任务状态 + Checkpoints + Learning Log | 所有 agent 共写 |
+| `TOOLS_STRATEGY.md` | Mastra Agent 工具清单 + Journey 映射 | 主 agent |
 
-## src/
+## packages/agent/src/（Mastra Agent）
 
-| 路径 | 用途 |
-|------|------|
-| `src/mastra/index.ts` | Mastra 实例入口 |
-| `src/mastra/agents/accountingAgent.ts` | 主 agent（gpt-4o-mini，4 tools）|
-| `src/mastra/tools/readFile.ts` | 读文件工具（沙箱限 data/ 目录）|
-| `src/mastra/tools/parseBankStatement.ts` | 解析 Westpac CSV |
-| `src/mastra/tools/parseXeroGL.ts` | 解析 Xero GL CSV |
-| `src/mastra/tools/reconcileAccounts.ts` | 对账 + 异常检测 |
+| 路径 | 用途 | 状态 |
+|------|------|------|
+| `packages/agent/src/index.ts` | Mastra 实例入口 | ✅ |
+| `packages/agent/src/agents/accountingAgent.ts` | 主 agent（Claude Sonnet，9 tools）| ⚠️ 需换模型 |
+| `packages/agent/src/prompts/system.ts` | NZ/AU 会计 system prompt | ❌ 待创建 |
+| `packages/agent/src/tools/readFile.ts` | 读文件工具（沙箱限 data/ 目录）| ⚠️ 需修路径 |
+| `packages/agent/src/tools/parseBankStatement.ts` | 解析 Westpac CSV | ✅ |
+| `packages/agent/src/tools/parseXeroGL.ts` | 解析 Xero GL CSV | ✅ |
+| `packages/agent/src/tools/reconcileAccounts.ts` | 对账 + 异常检测 | ✅ |
+| `packages/agent/src/tools/investigateAnomalies.ts` | 异常追查 + 会计判断 | ❌ J2 新建 |
+| `packages/agent/src/tools/calculateGST.ts` | NZ 15% GST 计算 | ❌ J3 新建 |
+| `packages/agent/src/tools/generatePnL.ts` | P&L 按科目汇总 | ❌ J4 新建 |
+| `packages/agent/src/tools/generateWorkingPaper.ts` | 底稿汇总 + 来源追溯 | ❌ J5 新建 |
+| `packages/agent/src/tools/queryTransactions.ts` | 自然语言查询交易 | ❌ J6 新建 |
+
+## packages/db/（Supabase）
+
+| 路径 | 用途 | 状态 |
+|------|------|------|
+| `packages/db/schema.sql` | Supabase 数据库 schema | ❌ 待创建 |
+
+## apps/web/（Next.js 前端）
+
+| 路径 | 用途 | 状态 |
+|------|------|------|
+| `apps/web/` | Next.js 15 App Router | ❌ 待搭建 |
 
 ## data/
 

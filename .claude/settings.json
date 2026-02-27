@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "deny": [
+      "Skill(python-code-review)",
+      "Skill(linkedin-automation)",
+      "Skill(firecrawl)",
+      "Skill(content-research-writer)",
+      "Skill(docx)",
+      "Skill(openclaw-skills-config-guardian)",
+      "Skill(mastra)",
+      "Skill(ai-sdk)",
+      "Skill(turborepo)",
+      "Skill(nextjs-best-practices)"
+    ]
+  }
+}

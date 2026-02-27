@@ -1,11 +1,11 @@
 import 'dotenv/config';
-import { createOpenAI } from '@ai-sdk/openai';
+import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText } from 'ai';
 
-const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const { text } = await generateText({
-  model: openai.chat('gpt-4o-mini'),
+  model: anthropic.chat('claude-sonnet-4-5'),
   prompt: 'Say "accounting AI works" and nothing else.',
 });
 

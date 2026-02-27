@@ -1,9 +1,14 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const DATA_DIR = resolve('/Users/mingfang/.openclaw/workspace/WIP/accounting-ai/data');
+// Resolve DATA_DIR relative to the monorepo root (3 levels up from this file)
+// Fallback to env variable if set
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const MONOREPO_ROOT = resolve(__dirname, '..', '..', '..', '..');
+const DATA_DIR = process.env.ACCOUNTING_DATA_DIR || resolve(MONOREPO_ROOT, 'data');
 
 export const readFile = createTool({
   id: 'readFile',

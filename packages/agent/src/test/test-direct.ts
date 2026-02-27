@@ -1,14 +1,17 @@
 import 'dotenv/config';
-import { openai } from '@ai-sdk/openai';
+import { anthropic } from '@ai-sdk/anthropic';
 import { generateText, tool } from 'ai';
 import { z } from 'zod';
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const DATA_DIR = resolve('/Users/mingfang/.openclaw/workspace/WIP/accounting-ai/data');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const MONOREPO_ROOT = resolve(__dirname, '..', '..', '..', '..');
+const DATA_DIR = process.env.ACCOUNTING_DATA_DIR || resolve(MONOREPO_ROOT, 'data');
 
 const { text } = await generateText({
-  model: openai('gpt-4o-mini'),
+  model: anthropic('claude-sonnet-4-5'),
   maxSteps: 10,
   tools: {
     readFile: tool({

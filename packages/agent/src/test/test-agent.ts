@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { mastra } from './mastra/index.js';
+import { mastra } from '../index.js';
 
 const agent = mastra.getAgent('accountingAgent');
 

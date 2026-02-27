@@ -8,20 +8,72 @@
 ## 当前位置
 
 **Journey: J1 — AI 对账找异常**
-**Step: 6 — Critic 验收**
+**Step: 6 — Critic 验收（blocked on 3 bugs）**
 
 验收标准：`curl` 或命令行跑出真实对账结果，AI 找到 Harbourside Plumbing 全部 5 个故意埋入的错误。
+
+---
+
+## J1 — 必须先修的 3 个 Bug
+
+> ⚠️ 这 3 个 bug 不修，J1 验收跑不通。按顺序修。
+
+### Bug 1: reconcile 双重计数（CRITICAL）
+
+**问题：** `reconcileAccounts.ts` line 84 对同一个 reference 的所有 GL 行做 `reduce((sum, gl) => sum + gl.net, 0)`，但一张 invoice 在 GL 里有两行：
+- Account 200 (Trade Debtors) = 应收金额（用来跟 bank 对账的）
+- Account 100 (Revenue) = 收入确认（不应参与对账匹配）
+
+两行加在一起导致 REF001 的 GL 金额变成 24,456.53（实际应该是 13,586.96），REF022 同理。
+
+**影响的错误：** Error 4 (REF001) 和 Error 5 (REF022) — 能检测到异常但金额全部错误。
+
+**修复方案：** 对 invoice 类型（Source = INV），只取 Account 200 (Trade Debtors) 行参与对账；对 BILL/PAY 类型，取主科目行（非 820 GST Account）。
+
+### Bug 2: GL 的 net 列空值被解析为 0
+
+**问题：** `parseXeroGL.ts` line 70：`net: parseFloat(net) || 0`。
+部分 GL 行的 net 列是空的（BILL 的 GST Account 行、TAX 类型行、部分 expense 行如 REF021）。空值被解析为 0，导致对账时 glNet 为 0。
+
+**影响的错误：**
+- Error 2 (REF023 GST Payment): GL debit=3200, net=空→0, 对账比较 bank(-3200) vs gl(0)
+- Error 3 (REF021 Trade Tools): GL debit=2347.83, net=空→0, 对账比较 bank(-2700) vs gl(0)
+- REF021 本应是正确的（$2,347.83 + $352.17 GST = $2,700），但因为 net=0 被误报
+
+**修复方案：** 当 net 为空时，fallback 计算：`net = debit > 0 ? debit : -credit`（即 debit 取正，credit 取负）。或者 reconcile 层直接用 debit/credit 而非 net。
+
+### Bug 3: 银行与 GL 的符号惯例不一致
+
+**问题：** 银行交易金额：支出为负（-3800），收入为正（+12500）。GL 的 net 列：debit 和 credit 都是正数（3478.26、13586.96）。reconcile 直接做 `bankAmount - glNet`，导致支出类交易产生荒谬差额。
+
+**影响的错误：** Error 1 (REF011 Payroll): bank=-3800, gl.net=3478.26, diff=-7278.26（实际差额应该是 321.74）。
+
+**修复方案：** reconcile 层在比较前做符号归一化：
+- 如果 bank.amount < 0（支出），比较 `Math.abs(bank.amount)` vs `gl.debit`
+- 如果 bank.amount > 0（收入），比较 `bank.amount` vs `gl.credit`
+- 或者统一转换为"资金流向"符号
 
 ---
 
 ## J1 任务列表
 
 - [x] parseBankCsvTool — 解析 Westpac CSV（44笔交易）
-- [x] parseXeroGLTool — 解析 Xero GL CSV（72行）
-- [x] reconcileTool — 按 Reference 匹配，输出 matched/unmatched
-- [ ] **[>] Critic 验收** — 跑真实对账，确认5个错误全部被找到
-  - DoD：命令输出包含 REF001 金额差 / INV-2026-004 未收款 / REF011 工资差异 / 其余2个
-  - 验收命令：`cd /path/to/accounting-ai && npx ts-node src/test-reconcile.ts`
+- [x] parseXeroGLTool — 解析 Xero GL CSV（72行）→ ⚠️ net 空值 bug 待修
+- [x] reconcileTool — 按 Reference 匹配 → ⚠️ 3 个 bug 待修
+- [x] ~~模型切换~~ — openai/gpt-4o-mini → anthropic/claude-sonnet-4-5 ✅ 已修
+- [x] ~~readFile 路径~~ — 硬编码改为相对路径 ✅ 已修
+- [x] ~~测试文件~~ — test-direct.ts / test-simple.ts 同步切换 Anthropic ✅ 已修
+- [ ] **[>] Bug 1 修复** — reconcile 双重计数（按 accountCode 过滤）
+- [ ] **Bug 2 修复** — parseXeroGL net 空值 fallback
+- [ ] **Bug 3 修复** — reconcile 符号归一化
+- [ ] **Critic 验收** — 跑真实对账，确认5个错误全部被正确检测
+  - DoD：
+    - REF001: PARTIAL_PAYMENT, 差额 = $1,086.96（bank 12500 vs GL debtors 13586.96）
+    - REF022/INV-2026-004: PARTIAL_PAYMENT, 差额 = $513.04（bank 5900 vs GL debtors 6413.04）
+    - REF011: AMOUNT_MISMATCH, 差额 = $321.74（bank 3800 vs GL wages 3478.26）
+    - REF023: GST_VERIFICATION 类型（金额匹配但需验证 GST liability）
+    - REF021: 不应报错（$2,347.83 + $352.17 GST = $2,700 ✓）
+  - 验收命令：`cd packages/agent && npx tsx src/test/test-agent.ts`
 - [ ] 优化 AI 输出格式（JSON → 人类可读报告，含严重程度分级）
 
 ---
@@ -34,13 +86,18 @@
 
 ## Status Log
 
-（每完成一个动作追加一行，格式：`- [时间] [一句话]`）
+- [2026-02-27] 模型切换 openai→anthropic 完成（accountingAgent.ts + package.json + 3 个 test 文件）
+- [2026-02-27] readFile.ts 硬编码路径修复（改为 import.meta.url 相对路径 + env fallback）
+- [2026-02-27] 发现 reconcile 3 个 critical bugs：双重计数 / net 空值 / 符号惯例
+- [2026-02-27] 创建 6 个 Mastra skills（每个 Journey 一个），注册到 Workspace，agent instructions 精简
 
 ---
 
 ## Learning Log
 
-（每次踩坑后追加，格式：`- [日期] [坑] → [解法]`）
+- [2026-02-27] GL CSV 的 net 列不是所有行都有值 → 不能依赖 net 列，需要用 debit/credit 做 fallback
+- [2026-02-27] Invoice 在 GL 里创建 2 行（Debtors + Revenue），对账只能用 Debtors 行 → reconcile 必须按 accountCode 过滤
+- [2026-02-27] Bank CSV 用正负号表示方向（-=支出），GL 用 debit/credit 列 → 对账前必须做符号归一化
 
 ---
 
