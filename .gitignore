@@ -4,3 +4,7 @@ node_modules/
 .mastra/
 dist/
 *.log
+package-lock.json
+
+# Added by ggshield
+.cache_ggshield
