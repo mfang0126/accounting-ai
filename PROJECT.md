@@ -6,11 +6,14 @@
 
 | 文件 | 用途 | 谁改 |
 |------|------|------|
+| `BOOTSTRAP.md` | 主 agent 启动入口（第一个读的文件） | 用户 |
+| `CONTEXT.md` | 项目大背景：AI 角色 + 真实场景 + 判断边界 + NZ 会计规则 | 用户 + 主 agent |
+| `CAPABILITY.md` | 项目能力说明 + 测试验证计划 + 数据真实性验证 | 主 agent |
 | `THINKING.md` | 底层逻辑，高于一切 | 主 agent + 用户 |
 | `PROJECT.md` | 文件结构索引（本文件） | 主 agent |
 | `PLAN.md` | 技术架构 + Phase 任务列表 | 主 agent |
 | `DEMO_DESIGN.md` | Demo 脚本 + 场景设计 | 主 agent |
-| `TASKS.md` | 当前任务状态（relay race 交接） | 所有 agent 共写 |
+| `TASKS.md` | 当前任务状态 + Checkpoints + Learning Log | 所有 agent 共写 |
 
 ## src/
 

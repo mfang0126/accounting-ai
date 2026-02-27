@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Orchestration Flow</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 40px 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 28px; font-weight: 600; margin-bottom: 8px; color: #fff; }
+  .subtitle { text-align: center; font-size: 14px; color: #666; margin-bottom: 48px; }
+
+  .phase { margin-bottom: 40px; position: relative; }
+  .phase-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 16px; padding-left: 4px; }
+
+  .node { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px 24px; margin-bottom: 2px; position: relative; transition: border-color 0.2s; }
+  .node:hover { border-color: #444; }
+  .node-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .node-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .node-title { font-size: 16px; font-weight: 600; color: #fff; }
+  .node-desc { font-size: 13px; color: #888; line-height: 1.5; padding-left: 48px; }
+  .node-file { display: inline-block; background: #1a1a2e; color: #7c8cf5; font-family: 'SF Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; }
+
+  .boot .node-icon { background: #1a2332; color: #4a9eff; }
+  .boot .node { border-left: 3px solid #4a9eff; }
+  .think .node-icon { background: #2d1f3d; color: #b07aff; }
+  .think .node { border-left: 3px solid #b07aff; }
+  .exec .node-icon { background: #1a3324; color: #4aff7a; }
+  .exec .node { border-left: 3px solid #4aff7a; }
+  .verify .node-icon { background: #332d1a; color: #ffd04a; }
+  .verify .node { border-left: 3px solid #ffd04a; }
+  .learn .node-icon { background: #331a1a; color: #ff6b6b; }
+  .learn .node { border-left: 3px solid #ff6b6b; }
+
+  .connector { display: flex; justify-content: center; padding: 4px 0; }
+  .arrow { color: #333; font-size: 20px; }
+
+  .decision { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px 24px; margin-bottom: 2px; text-align: center; }
+  .decision-text { font-size: 14px; font-weight: 600; color: #ffd04a; }
+  .decision-branches { display: flex; justify-content: center; gap: 40px; margin-top: 12px; }
+  .branch { font-size: 12px; color: #888; }
+  .branch-pass { color: #4aff7a; }
+  .branch-fail { color: #ff6b6b; }
+
+  .journey-loop { border: 1px dashed #333; border-radius: 16px; padding: 24px; margin-bottom: 2px; position: relative; }
+  .journey-loop-label { position: absolute; top: -10px; left: 20px; background: #0a0a0a; padding: 0 12px; font-size: 11px; font-weight: 700; color: #b07aff; letter-spacing: 1px; }
+
+  .repeat-arrow { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; color: #666; font-size: 12px; }
+  .repeat-arrow .curve { font-size: 24px; color: #b07aff; }
+
+  .file-sequence { display: flex; gap: 6px; flex-wrap: wrap; padding-left: 48px; margin-top: 8px; }
+  .file-tag { font-family: 'SF Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 6px; background: #1a1a1a; border: 1px solid #2a2a2a; }
+  .file-tag.active { border-color: #4a9eff; color: #4a9eff; }
+
+  .summary { background: linear-gradient(135deg, #161616, #1a1a2e); border: 1px solid #2a2a4e; border-radius: 12px; padding: 24px; margin-top: 40px; }
+  .summary h3 { font-size: 14px; color: #7c8cf5; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .summary-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+  .summary-value { font-size: 14px; color: #fff; font-weight: 500; }
+  .summary-value code { color: #4aff7a; background: #1a3324; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+
+  /* Journey timeline */
+  .journey-timeline { margin: 40px 0; }
+  .jt-title { font-size: 14px; font-weight: 700; color: #b07aff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; padding-left: 4px; }
+  .jt-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+  .jt-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .jt-content { flex: 1; }
+  .jt-name { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+  .jt-what { font-size: 12px; color: #888; }
+  .jt-verify { font-size: 11px; color: #666; margin-top: 4px; font-family: 'SF Mono', monospace; }
+  .jt-connector { display: flex; padding-left: 20px; height: 8px; }
+  .jt-line { width: 1px; background: #333; height: 100%; }
+
+  .j1 .jt-badge { background: #1a3324; color: #4aff7a; }
+  .j2 .jt-badge { background: #332d1a; color: #ffd04a; }
+  .j3 .jt-badge { background: #2d1f3d; color: #b07aff; }
+  .j4 .jt-badge { background: #1a2332; color: #4a9eff; }
+  .j5 .jt-badge { background: #331a2d; color: #ff7aaf; }
+  .j6 .jt-badge { background: #1a3333; color: #4affef; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>OpenClaw Orchestration Flow</h1>
+  <p class="subtitle">AI 助理会计 — 季度末完整工作流 — Harbourside Plumbing Q1 2026</p>
+
+  <!-- JOURNEY TIMELINE -->
+  <div class="journey-timeline">
+    <div class="jt-title">6 个 Journey = 一次完整季度末结账</div>
+
+    <div class="jt-item j1">
+      <div class="jt-badge">J1</div>
+      <div class="jt-content">
+        <div class="jt-name">"帮我对一下 Q1 的账"</div>
+        <div class="jt-what">Bank Reconciliation — 44笔银行 vs 57行 GL，逐笔匹配，找出所有不匹配</div>
+        <div class="jt-verify">验证：41 matched + 3 异常 + 0 误报</div>
+      </div>
+    </div>
+    <div class="jt-connector"><div class="jt-line"></div></div>
+
+    <div class="jt-item j2">
+      <div class="jt-badge">J2</div>
+      <div class="jt-content">
+        <div class="jt-name">"这几笔对不上的，查一下什么情况"</div>
+        <div class="jt-what">Anomaly Investigation — 追查原因，给出会计判断：催款？调账？查编码？</div>
+        <div class="jt-verify">验证：5 个问题全部给出正确判断 + 处理建议</div>
+      </div>
+    </div>
+    <div class="jt-connector"><div class="jt-line"></div></div>
+
+    <div class="jt-item j3">
+      <div class="jt-badge">J3</div>
+      <div class="jt-content">
+        <div class="jt-name">"算一下 GST，我要报 IRD"</div>
+        <div class="jt-what">GST Return — 收了多少 / 付了多少 / 已交 $6,000 / 还欠多少</div>
+        <div class="jt-verify">验证：AI 净额 vs 手算净额一致（NZ 15%）</div>
+      </div>
+    </div>
+    <div class="jt-connector"><div class="jt-line"></div></div>
+
+    <div class="jt-item j4">
+      <div class="jt-badge">J4</div>
+      <div class="jt-content">
+        <div class="jt-name">"出一份 Q1 的 P&L 给我"</div>
+        <div class="jt-what">P&L Summary — Revenue / Expenses / Net Profit，按 10 个科目分类</div>
+        <div class="jt-verify">验证：总数与 GL 手算一致</div>
+      </div>
+    </div>
+    <div class="jt-connector"><div class="jt-line"></div></div>
+
+    <div class="jt-item j5">
+      <div class="jt-badge">J5</div>
+      <div class="jt-content">
+        <div class="jt-name">"整理成底稿，每个数字要有来源"</div>
+        <div class="jt-what">Working Paper — J1-J4 汇总，每个数字标注 CSV 来源行号</div>
+        <div class="jt-verify">验证：抽查 5 个数字，每个可追溯到原始数据</div>
+      </div>
+    </div>
+    <div class="jt-connector"><div class="jt-line"></div></div>
+
+    <div class="jt-item j6">
+      <div class="jt-badge">J6</div>
+      <div class="jt-content">
+        <div class="jt-name">合伙人审阅 + 追问</div>
+        <div class="jt-what">Partner Review — 上传文件 → 看结果 → "Materials 花了多少？"</div>
+        <div class="jt-verify">验证：端到端操作，上传到追问全流程</div>
+      </div>
+    </div>
+  </div>
+
+  <hr style="border: none; border-top: 1px dashed #2a2a2a; margin: 40px 0;">
+
+  <!-- PHASE 1: BOOTSTRAP -->
+  <div class="phase boot">
+    <div class="phase-label">Agent 启动</div>
+
+    <div class="node">
+      <div class="node-header">
+        <div class="node-icon">1</div>
+        <div class="node-title">读 BOOTSTRAP.md → 按序读取 8 个文件</div>
+      </div>
+      <div class="file-sequence">
+        <span class="file-tag active">BOOTSTRAP</span>
+        <span class="file-tag">PROJECT</span>
+        <span class="file-tag">CONTEXT</span>
+        <span class="file-tag">CAPABILITY</span>
+        <span class="file-tag">THINKING</span>
+        <span class="file-tag">TASKS</span>
+        <span class="file-tag">PLAN</span>
+        <span class="file-tag">DEMO_DESIGN</span>
+      </div>
+      <div class="node-desc" style="margin-top: 12px;">启动检查 4 项 → 全部通过 → 找 [>] 继续</div>
+    </div>
+  </div>
+
+  <div class="connector"><span class="arrow" style="font-size: 24px; color: #4a9eff;">⬇</span></div>
+
+  <!-- PHASE 2: ROUTE -->
+  <div class="phase think">
+    <div class="phase-label">路由决策</div>
+    <div class="decision">
+      <div class="decision-text">TASKS.md 里有 [>] 任务吗？</div>
+      <div class="decision-branches">
+        <div class="branch"><span class="branch-pass">有 →</span> 直接执行</div>
+        <div class="branch"><span class="branch-fail">无 →</span> 解锁下个 Journey，走 Step 1-4 拆 task</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><span class="arrow" style="font-size: 24px; color: #b07aff;">⬇</span></div>
+
+  <!-- PHASE 3: JOURNEY LOOP -->
+  <div class="phase">
+    <div class="journey-loop">
+      <div class="journey-loop-label">每个 JOURNEY 重复此循环（J1 → J2 → ... → J6）</div>
+
+      <div class="phase exec" style="margin-top: 8px;">
+        <div class="phase-label">执行</div>
+        <div class="node">
+          <div class="node-header">
+            <div class="node-icon">▶</div>
+            <div class="node-title">委派 Claude Code 写代码</div>
+          </div>
+          <div class="node-desc">
+            每个 task 带 DoD + Acceptance Scenarios<br>
+            完成 → 更新 TASKS.md [>] → [x] + Status Log
+          </div>
+        </div>
+      </div>
+
+      <div class="connector"><span class="arrow">↓</span></div>
+
+      <div class="phase verify">
+        <div class="phase-label">验收</div>
+        <div class="node">
+          <div class="node-header">
+            <div class="node-icon">✓</div>
+            <div class="node-title">Critic Agent 对照 DoD 验收</div>
+          </div>
+          <div class="node-desc">跑真实命令 → 对比预期输出 → PASS 或 FAIL</div>
+        </div>
+
+        <div class="connector"><span class="arrow">↓</span></div>
+
+        <div class="decision">
+          <div class="decision-text">结果？</div>
+          <div class="decision-branches">
+            <div class="branch"><span class="branch-pass">PASS →</span> Checkpoint + 通知用户 + 解锁下一个</div>
+            <div class="branch"><span class="branch-fail">FAIL →</span> Learning Log + 重试（最多 3 次）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="repeat-arrow">
+        <span class="curve">↻</span>
+        <span>FAIL → 重试 / PASS → 下一个 Journey</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><span class="arrow" style="font-size: 24px; color: #4aff7a;">⬇</span></div>
+
+  <div class="phase boot">
+    <div class="node">
+      <div class="node-header">
+        <div class="node-icon">🎉</div>
+        <div class="node-title">全部 Journey 完成 → 通知用户</div>
+      </div>
+      <div class="node-desc">季度末结账流程完成。更新 TASKS.md，等待下一步指示。</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary">
+    <h3>文档体系</h3>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="summary-label">入口</div>
+        <div class="summary-value"><code>BOOTSTRAP.md</code></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">大背景 + AI 角色</div>
+        <div class="summary-value"><code>CONTEXT.md</code></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">能力 + 验证计划</div>
+        <div class="summary-value"><code>CAPABILITY.md</code></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">最高规则</div>
+        <div class="summary-value"><code>THINKING.md</code></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">共享状态 + 进度 + 学习</div>
+        <div class="summary-value"><code>TASKS.md</code></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">测试数据</div>
+        <div class="summary-value"><code>data/sample/</code> Harbourside Plumbing</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
