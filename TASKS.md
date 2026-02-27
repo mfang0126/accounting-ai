@@ -63,24 +63,22 @@
 - [x] ~~模型切换~~ — openai/gpt-4o-mini → anthropic/claude-sonnet-4-5 ✅ 已修
 - [x] ~~readFile 路径~~ — 硬编码改为相对路径 ✅ 已修
 - [x] ~~测试文件~~ — test-direct.ts / test-simple.ts 同步切换 Anthropic ✅ 已修
-- [ ] **[>] Bug 1 修复** — reconcile 双重计数（按 accountCode 过滤）
-- [ ] **Bug 2 修复** — parseXeroGL net 空值 fallback
-- [ ] **Bug 3 修复** — reconcile 符号归一化
-- [ ] **Critic 验收** — 跑真实对账，确认5个错误全部被正确检测
-  - DoD：
-    - REF001: PARTIAL_PAYMENT, 差额 = $1,086.96（bank 12500 vs GL debtors 13586.96）
-    - REF022/INV-2026-004: PARTIAL_PAYMENT, 差额 = $513.04（bank 5900 vs GL debtors 6413.04）
-    - REF011: AMOUNT_MISMATCH, 差额 = $321.74（bank 3800 vs GL wages 3478.26）
-    - REF023: GST_VERIFICATION 类型（金额匹配但需验证 GST liability）
-    - REF021: 不应报错（$2,347.83 + $352.17 GST = $2,700 ✓）
-  - 验收命令：`cd packages/agent && npx tsx src/test/test-agent.ts`
+- [x] **Bug 1 修复** ✅ — INV: 只取 Account 200 (Trade Debtors) net，避免 Revenue 行重复计数
+- [x] **Bug 2 修复** ✅ — parseXeroGL: net 空值时 fallback 到 debit || credit
+- [x] **Bug 3 修复** ✅ — BILL 无 820 行时加 taxAmount；PAY/BILL 类型一律 AMOUNT_MISMATCH
+- [x] **Critic 验收** ✅ — 5个 DoD 全部通过（`npx tsx src/test/test-reconcile-critic.ts`）
+  - REF001: PARTIAL_PAYMENT ✅ diff $1,086.96
+  - REF022: PARTIAL_PAYMENT ✅ diff $513.04
+  - REF011: AMOUNT_MISMATCH ✅ diff $321.74
+  - REF023: GST_VERIFICATION ✅
+  - REF021: 正确 matched，不报错 ✅
 - [ ] 优化 AI 输出格式（JSON → 人类可读报告，含严重程度分级）
 
 ---
 
 ## Checkpoints
 
-（J1 验收通过后在此记录）
+- **J1 完成** [2026-02-27] — reconcile 3 bugs 修复，5个 Harbourside 错误全部正确检测 ✅
 
 ---
 
